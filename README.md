@@ -12,6 +12,11 @@ Contents:
 * apiPersonalize: a folder containing a serverless facade API to broker the Personalize requests as well as a mocked Product/Item database that is used to hydrate Personalize responses into a meaningful format.
 * webDemo: a folder containing a simple javascript SPA that calls into the above API
 
+### Important Files
+* apiPersonalize/serverless.yml: YAML config file defining my API (API Gateway + Lambda)
+* apiPersonalize/handler.js: NodeJS file containing my Lambda code
+* webDemo/index.html: SPA built with Bootstrap 4.4, Javascript, Jquery, and Handlebars
+
 ### Prerequisites
 
 Create your own Personalize Solutions + Campaigns with two ARNs:
@@ -23,15 +28,10 @@ Install Serverless Framework (serverless.com): `npm i -g serverless`
 ### Setup
 
 1) Clone this repo and run `npm install`
-2) Set two SSM Parameter Store variables, one for each ARN described above
+2) Set two AWS SSM Parameter Store variables, one for each ARN described above
 3) Reference your two SSM Parameter Store variables in the serverless.yml file
 4) CD to the apiPersonalize folder and run `serverless deploy` to deploy
 5) Host/Run the webDemo/index.html file
-
-### Important Files
-* apiPersonalize/serverless.yml: YAML config file defining my API (API Gateway + Lambda)
-* apiPersonalize/handler.js: NodeJS file containing my Lambda code
-* webDemo/index.html: SPA built with HTML, Bootstrap 4.4, Javascript, Jquery, and CSS
 
 ### Local Function Invocation for Testing (from apiPersonalize folder)
 
