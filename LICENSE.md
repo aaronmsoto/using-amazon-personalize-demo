@@ -1,3 +1,3 @@
 # LICENSE
 
-For private demo use only. No other license to use is granted. This is a private code repo.
+For private demo use only. No other license to use is granted. Code is provided as-is without warranty.
