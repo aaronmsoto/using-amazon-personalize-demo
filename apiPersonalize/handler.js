@@ -79,6 +79,15 @@ async function getRecommendationsData(params) {
   return data;
 }
 
+function obfuscateCampaignArn(fullArn) {
+  let maskedArn = "";
+  const splitString = ":campaign/";
+  if(fullArn && fullArn.indexOf(splitString)) {
+    const arnArray = fullArn.split(splitString);
+    maskedArn = "..." + splitString + arnArray[1];
+  }
+  return maskedArn;
+}
 function getApiData(inputParams, dataPersonalize) {
   let dataHydrated = [];
   if(dataPersonalize && dataPersonalize.itemList && dataPersonalize.itemList.length > 0) {
@@ -92,6 +101,7 @@ function getApiData(inputParams, dataPersonalize) {
       dataHydrated.push(product);
     }
   }
+  inputParams.campaignArn = obfuscateCampaignArn(inputParams.campaignArn);
   const apiData = {
     InputParams: inputParams,
     HydratedProductData: dataHydrated,
