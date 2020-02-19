@@ -1,0 +1,22 @@
+{
+  "name": "apipersonalize",
+  "version": "1.0.0",
+  "description": "Amazon Personalize API for Aaron MB3 demo.",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aaronmsoto/mb3personalize.git"
+  },
+  "author": "aasoto@amazon.com",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "bugs": {
+    "url": "https://github.com/aaronmsoto/mb3personalize/issues"
+  },
+  "homepage": "https://github.com/aaronmsoto/mb3personalize#readme",
+  "dependencies": {
+    "aws-sdk": "^2.619.0"
+  }
+}

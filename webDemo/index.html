@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <!-- Customer CSS -->
+    <style type="text/css">
+        .textareaTerminal {
+            width: 100%;
+            height: 200px;
+            background-color: #000;
+            border: 1px solid #999;
+            color: #00cc00;
+            padding: 8px;
+            font: 12px courier new, courier, serif;
+        }
+    </style>
+
+    <title>Octank Personalization Demo</title>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Octank Personalization Demo</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+                    <li id="user0" class="nav-item active">
+                        <a class="nav-link" href="#u=0">Welcome</a>
+                    </li>
+                    <li id="user1" class="nav-item">
+                        <a class="nav-link" href="#u=1">Ada</a>
+                    </li>
+                    <li id="user2" class="nav-item">
+                        <a class="nav-link" href="#u=2">Ben</a>
+                    </li>
+                    <li id="user3" class="nav-item">
+                        <a class="nav-link" href="#u=3">Claire</a>
+                    </li>
+                    <li id="user4" class="nav-item">
+                        <a class="nav-link" href="#u=4">David</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div id="contentPage"></div>
+
+    <!-- Modal Content -->
+    <div id="contentModal"></div>
+
+    <!-- Script/Template Cards -->
+    <script id="templateCards" type="x-template">
+        <div class="container">
+            <div class="jumbotron  jumbotron-fixed">
+                <h1 class="display-6">Hello, <em>{{user.name}}</em>!</h1>
+                <p class="lead">{{user.lead}}</p>
+            </div>
+        </div>
+        <div class="container">
+            <h2>Recommendations for {{user.name}}:</h2>
+            <div class="row">
+                {{#products.HydratedProductData}}
+                <div class="col-sm-3">
+                    <div class="card mb-4">
+                        <svg class="bd-placeholder-img card-img-top" width="100%" height="60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Item: {{item_id}}">
+                            <title>{{item_id}}</title>
+                            <rect width="100%" height="100%" fill="{{bg_color}}"></rect>
+                            <text x="20px" y="50%" fill="#ffffff" dy="0.3em">{{item_id}}</text>
+                        </svg>
+                        <div class="card-body">
+                            <h5 class="card-title" style="min-height:80px;">{{product_title}}</h5>
+                            <a href="#" class="btn btn-warning btn-viewproduct" 
+                                data-item_id="{{item_id}}" 
+                                data-product_title="{{product_title}}" 
+                                data-product_reviews="{{product_reviews}}" 
+                                data-product_rating_rounded="{{product_rating_rounded}}" 
+                                data-bg_color="{{bg_color}}">VIEW</a>
+                        </div>
+                    </div>
+                </div>
+                {{/products.HydratedProductData}}
+            </div>
+        </div>
+    </script>
+
+    <!-- Script/Template Modal -->
+    <script id="templateModal" type="x-template">
+        <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-muted" id="exampleModalLabel">PRODUCT DETAILS</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <h3>{{selectedItem.product_title}}</h3>
+                        <svg class="img-fluid" width="50%" height="200px" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Item: {{selectedItem.item_id}}">
+                            <title>{{selectedItem.item_id}}</title>
+                            <rect width="100%" height="100%" fill="{{selectedItem.bg_color}}"></rect>
+                            <text x="20px" y="50%" fill="#ffffff" dy="0.3em">Item {{selectedItem.item_id}} Image Placeholder</text>
+                        </svg>
+                        
+                        <h3 class="mt-3">You may also like...</h3>
+                        <div class="row">
+                            {{#selectedRelated.HydratedProductData}}
+                            <div class="col-sm-3">
+                                <div class="card mb-4">
+                                    <svg class="bd-placeholder-img card-img-top" width="100%" height="60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Item: {{item_id}}">
+                                        <title>{{item_id}}</title>
+                                        <rect width="100%" height="100%" fill="{{bg_color}}"></rect>
+                                        <text x="20px" y="50%" fill="#ffffff" dy="0.3em">{{item_id}}</text>
+                                    </svg>
+                                    <div class="card-body">
+                                        <h5 class="card-title" style="min-height:80px;">{{product_title}}</h5>
+                                        <a href="#" class="btn btn-warning btn-viewproduct" 
+                                            data-item_id="{{item_id}}" 
+                                            data-product_title="{{product_title}}" 
+                                            data-product_reviews="{{product_reviews}}" 
+                                            data-product_rating_rounded="{{product_rating_rounded}}" 
+                                            data-bg_color="{{bg_color}}">VIEW</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {{/selectedRelated.HydratedProductData}}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <div class="container">
+        <div class="row mt-4 mb-0">
+            <div class="col mb-0">
+                <h2>Diagnostics - HTTP Requests &amp; Responses</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md">
+                <h6>Requests:</h6>
+                <textarea id="textareaRequests" class="textareaTerminal" readonly></textarea>
+            </div>
+            <div class="col-md">
+                <h6>Responses:</h6>
+                <textarea id="textareaResponses" class="textareaTerminal" readonly></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+
+    <!-- Include Handlebars from a CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script>
+        /* global Handlebars, $ */
+        const $textareaRequests = $("#textareaRequests");
+        const $textareaResponses = $("#textareaResponses");
+        const urlApiBase = "https://kh4w16mxvf.execute-api.us-east-2.amazonaws.com/dev/recommendations";
+        const users = [{
+                name: "you",
+                lead: "Welcome to our site, whoever you are, enjoy our stuff.",
+                userId: ""
+            },
+            {
+                name: "Ada",
+                lead: "Welcome, Ada, we know you're Female, 13-19, with a salary of $120K - $160K.",
+                userId: "37100644"
+            },
+            {
+                name: "Ben",
+                lead: "Welcome, Ben, we know you're Male, 20-29, with a salary of $80K - $120K.",
+                userId: "38593207"
+            },
+            {
+                name: "Claire",
+                lead: "Welcome, Claire, we know you're Female, 50+, with a salary of $40K - $80K.",
+                userId: "42794646"
+            },
+            {
+                name: "David",
+                lead: "Welcome, David, we know you're Make, 30-39, with a salary of $160K+.",
+                userId: "44129943"
+            }
+        ];
+        let viewmodel = {};
+        updateViewmodel(0);
+        
+        window.onhashchange = function() {
+            //Hash object extraction from: https://stackoverflow.com/questions/5646851/split-and-parse-window-location-hash
+            const hashStr = window.location.hash.substr(1);
+            const hashObj = hashStr.split("&")
+                .map(v => v.split("="))
+                .reduce((pre, [key, value]) => ({ ...pre, [key]: value }), {});
+            if (!isNaN(parseFloat(hashObj.u)) && isFinite(hashObj.u))
+                updateViewmodel(parseInt(hashObj.u), null); //if hashObj.u is numeric, then update the UI...
+        };
+        
+        //Function 'doHandlebars' adapted from: https://jsfiddle.net/Katio/HeLaw/
+        function doHandlebars(selectorParentElement, idMainTemplate, jsonData) {
+            const template = Handlebars.compile($("#" + idMainTemplate).html());
+            $(selectorParentElement).html(template(jsonData));
+        }
+
+        function updateViewmodel(userIndex, itemId) {
+            var urlApi;
+            const user = users[userIndex];
+            if (userIndex === 0 && itemId)
+                urlApi = urlApiBase + "/item/" + itemId;
+            else if (userIndex > 0 && itemId)
+                urlApi = urlApiBase + "/useritem/" + user.userId + "/" + itemId;
+            else if (userIndex > 0)
+                urlApi = urlApiBase + "/user/" + user.userId;
+            if (urlApi) {
+                $textareaRequests.val($textareaRequests.val() + "GET: " + urlApi + "\n");
+                $.get(urlApi).done(function(data) {
+                    viewmodel = {
+                        userIndex: userIndex,
+                        user: user,
+                        products: data
+                    };
+                    //console.log(JSON.stringify(viewmodel));
+                    $textareaResponses.val($textareaResponses.val() + JSON.stringify(data, null, 2) + "\n");
+                    updateUI(viewmodel);
+                });
+            }
+            else {
+                viewmodel = {
+                    userIndex: userIndex,
+                    user: user,
+                    products: {
+                        HydratedProductData: [{
+                                "item_id": "B0062ONAM8",
+                                "product_title": "Amazon eGift Card - Amazon Electronics",
+                                "product_reviews": 169,
+                                "product_rating": 4.887573964,
+                                "product_rating_rounded": 4.89
+                            },
+                            {
+                                "item_id": "BT00DC6QU4",
+                                "product_title": "Amazon.com eGift Cards",
+                                "product_reviews": 168,
+                                "product_rating": 4.869047619,
+                                "product_rating_rounded": 4.87
+                            },
+                            {
+                                "item_id": "B004LLIL3C",
+                                "product_title": "Amazon eGift Card - Happy Birthday (Octopus)",
+                                "product_reviews": 168,
+                                "product_rating": 4.821428571,
+                                "product_rating_rounded": 4.82
+                            },
+                            {
+                                "item_id": "B004RD9ACA",
+                                "product_title": "Amazon Gift Card - Print - Happy Birthday (Hats)",
+                                "product_reviews": 166,
+                                "product_rating": 4.734939759,
+                                "product_rating_rounded": 4.73
+                            }
+                        ]
+                    }
+                };
+                console.log(JSON.stringify(viewmodel));
+                updateUI(viewmodel);
+            }
+        }
+
+        function updateUI(viewmodel) {
+            $("[id^=user]").removeClass("active"); //remove "active" from all user* links
+            $("#user" + viewmodel.userIndex).addClass("active"); //add "active" to selected link
+            $textareaRequests.scrollTop(99999999);
+            $textareaResponses.scrollTop(99999999);
+            doHandlebars("#contentPage", "templateCards", viewmodel);
+            doHandlebars("#contentModal", "templateModal", viewmodel);
+        }
+        
+        $(document).on('click', '.btn-viewproduct', function(e) {
+            e.preventDefault();
+            $('#productModal').modal('hide');
+            viewmodel.selectedItem = {
+                item_id: $(this).data('item_id'),
+                product_title: $(this).data('product_title'),
+                product_reviews: $(this).data('product_reviews'),
+                product_rating_rounded: $(this).data('product_rating_rounded'),
+                bg_color: $(this).data('bg_color')
+            };
+            
+            var urlApi;
+            if (viewmodel.userIndex === 0 && viewmodel.selectedItem.item_id)
+                urlApi = urlApiBase + "/item/" + viewmodel.selectedItem.item_id;
+            else if (viewmodel.userIndex > 0 && viewmodel.selectedItem.item_id)
+                urlApi = urlApiBase + "/useritem/" + viewmodel.user.userId + "/" + viewmodel.selectedItem.item_id;
+            
+            if(urlApi) {
+                $textareaRequests.val($textareaRequests.val() + "GET: " + urlApi + "\n");
+                $.get(urlApi).done(function(data) {
+                    viewmodel.selectedRelated = data;
+                    $textareaResponses.val($textareaResponses.val() + JSON.stringify(data, null, 2) + "\n");
+                    doHandlebars("#contentModal", "templateModal", viewmodel);
+                    $('#productModal').modal('show');
+                    $textareaRequests.scrollTop(99999999);
+                    $textareaResponses.scrollTop(99999999);
+                });
+            }
+        });
+    </script>
+
+</body>
+
+</html>

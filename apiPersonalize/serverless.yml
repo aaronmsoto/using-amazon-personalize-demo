@@ -1,0 +1,54 @@
+# Welcome to Serverless!
+service: apipersonalize
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-east-2
+  # profile: serverless
+
+  environment:
+    # You must set the following two SSM Parameter Store values for your Personalize Campaign ARNs...
+    SsmPersonalizeArnCampaignByUser: /mb3personalize/arnPersonalizeCampaignByUser
+    SsmPersonalizeArnCampaignByItem: /mb3personalize/arnPersonalizeCampaignByItem
+    SsmIsEncrypted: true
+    FileProductData: data_products.json
+    MaxNumResults: 8
+
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "personalize:GetRecommendations"
+        - "personalize:GetPersonalizedRanking"
+      Resource:
+        - "arn:aws:personalize:*"
+    - Effect: "Allow"
+      Action:
+        - "ssm:GetParameter"
+        - "ssm:GetParameters"
+      Resource:
+        - "arn:aws:ssm:*"
+
+functions:
+  GetRecommendationsByUser:
+    handler: handler.GetRecommendationsByUser
+    events:
+      - http:
+          cors: true
+          path: recommendations/user/{userId}
+          method: get
+  GetRecommendationsByItem:
+    handler: handler.GetRecommendationsByItem
+    events:
+      - http:
+          cors: true
+          path: recommendations/item/{itemId}
+          method: get
+  GetRecommendationsByUserItem:
+    handler: handler.GetRecommendationsByUserItem
+    events:
+      - http:
+          cors: true
+          path: recommendations/useritem/{userId}/{itemId}
+          method: get
