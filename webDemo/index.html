@@ -149,16 +149,7 @@
         <div class="row mt-4 mb-0">
             <div class="col mb-0">
                 <h2>Diagnostics - HTTP Requests &amp; Responses</h2>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md">
-                <h6>Requests:</h6>
-                <textarea id="textareaRequests" class="textareaTerminal" readonly></textarea>
-            </div>
-            <div class="col-md">
-                <h6>Responses:</h6>
-                <textarea id="textareaResponses" class="textareaTerminal" readonly></textarea>
+                <textarea id="textareaDiagnostics" class="textareaTerminal" readonly></textarea>
             </div>
         </div>
     </div>
@@ -173,8 +164,7 @@
     <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <script>
         /* global Handlebars, $ */
-        const $textareaRequests = $("#textareaRequests");
-        const $textareaResponses = $("#textareaResponses");
+        const $textareaDiagnostics = $("#textareaDiagnostics");
         const urlApiBase = "https://kh4w16mxvf.execute-api.us-east-2.amazonaws.com/dev/recommendations";
         const users = [{
                 name: "you",
@@ -231,7 +221,7 @@
             else if (userIndex > 0)
                 urlApi = urlApiBase + "/user/" + user.userId;
             if (urlApi) {
-                $textareaRequests.val($textareaRequests.val() + "GET: " + urlApi + "\n");
+                $textareaDiagnostics.val($textareaDiagnostics.val() + "GET: " + urlApi + "\n");
                 $.get(urlApi).done(function(data) {
                     viewmodel = {
                         userIndex: userIndex,
@@ -239,7 +229,7 @@
                         products: data
                     };
                     //console.log(JSON.stringify(viewmodel));
-                    $textareaResponses.val($textareaResponses.val() + JSON.stringify(data, null, 2) + "\n");
+                    $textareaDiagnostics.val($textareaDiagnostics.val() + formatResponseForTextarea(data));
                     updateUI(viewmodel);
                 });
             }
@@ -287,8 +277,7 @@
         function updateUI(viewmodel) {
             $("[id^=user]").removeClass("active"); //remove "active" from all user* links
             $("#user" + viewmodel.userIndex).addClass("active"); //add "active" to selected link
-            $textareaRequests.scrollTop(99999999);
-            $textareaResponses.scrollTop(99999999);
+            $textareaDiagnostics.scrollTop(99999999);
             doHandlebars("#contentPage", "templateCards", viewmodel);
             doHandlebars("#contentModal", "templateModal", viewmodel);
         }
@@ -311,17 +300,27 @@
                 urlApi = urlApiBase + "/useritem/" + viewmodel.user.userId + "/" + viewmodel.selectedItem.item_id;
             
             if(urlApi) {
-                $textareaRequests.val($textareaRequests.val() + "GET: " + urlApi + "\n");
+                $textareaDiagnostics.val($textareaDiagnostics.val() + "GET: " + urlApi + "\n");
                 $.get(urlApi).done(function(data) {
                     viewmodel.selectedRelated = data;
-                    $textareaResponses.val($textareaResponses.val() + JSON.stringify(data, null, 2) + "\n");
+                    $textareaDiagnostics.val($textareaDiagnostics.val() + formatResponseForTextarea(data));
                     doHandlebars("#contentModal", "templateModal", viewmodel);
                     $('#productModal').modal('show');
-                    $textareaRequests.scrollTop(99999999);
-                    $textareaResponses.scrollTop(99999999);
+                    $textareaDiagnostics.scrollTop(99999999);
                 });
             }
         });
+        
+        function formatResponseForTextarea(data) {
+            var content = "";
+            if(data && data.HydratedProductData && data.HydratedProductData.length > 0) {
+                for(var i = 0; i < data.HydratedProductData.length; i++) {
+                    content += `,${data.HydratedProductData[i].item_id}`;
+                }
+                content = "  => " + content.substr(1) + "\n"; //add prefix, remove leading comma, and add newline
+            }
+            return content;
+        }
     </script>
 
 </body>
