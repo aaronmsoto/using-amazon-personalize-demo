@@ -19,6 +19,12 @@ This is a demo project to showcase fundamental Amazon Personalize capabilities v
 * apiPersonalize/handler.js: NodeJS file containing my Lambda code for my API tier
 * webDemo/index.html: An HTML/Javascript SPA built with Bootstrap 4.4, Jquery, and Handlebars
 
+### API Endpoints
+Each endpoint assesses the relevant Campaign to use and passes the Campaign ARN and parameter input on to the PersonalizeRuntime API for realtime recommendations and uses the returned recommended item_id values to hydrate meaningful Item data from the mocked database tier that is based on the JSON Item data. This hydration step is needed since Personalize only returns lists of item_id.
+* **/recommendations/item/{item_id}** - GET Personalize recommendations ONLY by Item
+* **/recommendations/user/{user_id}** - GET Personalize recommendations ONLY by User
+* **/recommendations/useritem/{user_id}/{item_id}** - GET Personalize recommendations by User+Item
+
 ### Prerequisites (if you want to run this demo)
 
 Create your own Personalize Solutions + Campaigns with two ARNs:\
