@@ -7,16 +7,20 @@ const PersonalizeRT = new AWS.PersonalizeRuntime();
 
 let   PersonalizeCampaignArns;
 const MaxNumResults = process.env.MaxNumResults;
+const FileFieldProductID = process.env.FileFieldProductID;
+const FileFieldProductName = process.env.FileFieldProductName;
+const FileFieldProductThumbnail = process.env.FileFieldProductThumbnail;
 const ProductData = loadProductDataFromFile(process.env.FileProductData);
 const ColorsArray = ['#78281f','#512e5f','#1b4f72','#0b5345','#186a3b','#7e5109','#6e2c00','#6e2c00','#424949','#17202a',];
 
 const getHashCode = s => s.split('').reduce((a,b) => (((a << 5) - a) + b.charCodeAt(0))|0, 0);
 
 async function getPersonalizeCampaignArns(paramNamesArray, isEncrypted) {
-  isEncrypted = isEncrypted === true ? true : false;
+  isEncrypted = isEncrypted === true || isEncrypted === "true" ? true : false;
   let arnsObject = {};
   try {
-    const data = await SSM.getParameters({ Names: paramNamesArray, WithDecryption: isEncrypted }).promise();
+    const params = { Names: paramNamesArray, WithDecryption: isEncrypted };
+    const data = await SSM.getParameters(params).promise();
     if(data && data.Parameters && data.Parameters.length > 0) {
       for(let i = 0; i < data.Parameters.length; i++) {
         if(data.Parameters[i].Name === process.env.SsmPersonalizeArnCampaignByUser)
@@ -36,7 +40,7 @@ function loadProductDataFromFile(file) {
   const dataRaw = JSON.parse(FS.readFileSync(file, 'utf8'));
   let dataDict = {};
   for(let i = 0; i < dataRaw.length; i++) {
-    dataDict[dataRaw[i].item_id] = dataRaw[i];
+    dataDict[dataRaw[i][FileFieldProductID]] = dataRaw[i];
   }
   return dataDict;
 }
@@ -88,17 +92,19 @@ function obfuscateCampaignArn(fullArn) {
   }
   return maskedArn;
 }
+
 function getApiData(inputParams, dataPersonalize) {
   let dataHydrated = [];
   if(dataPersonalize && dataPersonalize.itemList && dataPersonalize.itemList.length > 0) {
     for(let i = 0; i < dataPersonalize.itemList.length; i++) {
       let product = ProductData[dataPersonalize.itemList[i].itemId];
       if(product) {
-        const colorIndex = Math.abs(getHashCode(product.item_id)) % ColorsArray.length;  //product.product_reviews % ColorsArray.length;
-        product.bg_color = ColorsArray[colorIndex];
-        product.product_rating_rounded = Math.round((product.product_rating + Number.EPSILON) * 100) / 100;
+        //Map possibly dynamic field names to our set of known fields...
+        product.ProductID = product[FileFieldProductID];
+        product.ProductName = product[FileFieldProductName];
+        product.ProductThumbnail = product[FileFieldProductThumbnail];
+        dataHydrated.push(product);
       }
-      dataHydrated.push(product);
     }
   }
   inputParams.campaignArn = obfuscateCampaignArn(inputParams.campaignArn);

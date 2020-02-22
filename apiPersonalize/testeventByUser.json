@@ -28,7 +28,7 @@
   },
   "queryStringParameters": null,
   "pathParameters": {
-      "userId": "41484424"
+      "userId": "1"
   },
   "stageVariables": null,
   "requestContext": {

@@ -28,7 +28,7 @@
   },
   "queryStringParameters": null,
   "pathParameters": {
-      "itemId": "B0002CZPPG"
+      "itemId": "1"
   },
   "stageVariables": null,
   "requestContext": {

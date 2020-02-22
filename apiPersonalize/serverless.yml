@@ -4,16 +4,19 @@ service: apipersonalize
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: dev
+  stage: demoMovies
   region: us-east-2
   # profile: serverless
 
   environment:
     # You must set the following two SSM Parameter Store values for your Personalize Campaign ARNs...
-    SsmPersonalizeArnCampaignByUser: /mb3personalize/arnPersonalizeCampaignByUser
-    SsmPersonalizeArnCampaignByItem: /mb3personalize/arnPersonalizeCampaignByItem
+    SsmPersonalizeArnCampaignByUser: /personalizeMovies/arnPersonalizeCampaignByUser
+    SsmPersonalizeArnCampaignByItem: /personalizeMovies/arnPersonalizeCampaignByItem
     SsmIsEncrypted: true
-    FileProductData: data_products.json
+    FileProductData: data_movies.json
+    FileFieldProductID: movie_id
+    FileFieldProductName: movie_title
+    FileFieldProductThumbnail: thumbnail_url_imdb
     MaxNumResults: 8
 
   iamRoleStatements:

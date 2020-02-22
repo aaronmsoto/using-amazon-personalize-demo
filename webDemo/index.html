@@ -66,30 +66,21 @@
         <div class="container">
             <div class="jumbotron  jumbotron-fixed">
                 <h1 class="display-6">Hello, <em>{{user.name}}</em>!</h1>
-                <p class="lead">{{user.lead}}</p>
+                <p class="lead hidden">{{user.lead}}</p>
             </div>
         </div>
         <div class="container">
             <h2>Recommendations for {{user.name}}:</h2>
             <div class="row">
                 {{#products.HydratedProductData}}
-                <div class="col-sm-3">
-                    <div class="card mb-4">
-                        <svg class="bd-placeholder-img card-img-top" width="100%" height="60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Item: {{item_id}}">
-                            <title>{{item_id}}</title>
-                            <rect width="100%" height="100%" fill="{{bg_color}}"></rect>
-                            <text x="20px" y="50%" fill="#ffffff" dy="0.3em">{{item_id}}</text>
-                        </svg>
-                        <div class="card-body">
-                            <h5 class="card-title" style="min-height:80px;">{{product_title}}</h5>
-                            <a href="#" class="btn btn-warning btn-viewproduct" 
-                                data-item_id="{{item_id}}" 
-                                data-product_title="{{product_title}}" 
-                                data-product_reviews="{{product_reviews}}" 
-                                data-product_rating_rounded="{{product_rating_rounded}}" 
-                                data-bg_color="{{bg_color}}">VIEW</a>
-                        </div>
-                    </div>
+                <div class="col">
+                    <a href="#" class="link-viewproduct" 
+                        title="{{ProductName}}"
+                        data-id="{{ProductID}}"
+                        data-name="{{ProductName}}"
+                        data-thumbnail="{{ProductThumbnail}}">
+                        <img src="{{ProductThumbnail}}" class="card-img-top" alt="IMDB Image: {{ProductName}}"  />
+                    </a>
                 </div>
                 {{/products.HydratedProductData}}
             </div>
@@ -102,37 +93,23 @@
             <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title text-muted" id="exampleModalLabel">PRODUCT DETAILS</h5>
+                        <h3 class="modal-title" id="exampleModalLabel">{{selectedItem.ProductName}}</h3>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
                     <div class="modal-body">
-                        <h3>{{selectedItem.product_title}}</h3>
-                        <svg class="img-fluid" width="50%" height="200px" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Item: {{selectedItem.item_id}}">
-                            <title>{{selectedItem.item_id}}</title>
-                            <rect width="100%" height="100%" fill="{{selectedItem.bg_color}}"></rect>
-                            <text x="20px" y="50%" fill="#ffffff" dy="0.3em">Item {{selectedItem.item_id}} Image Placeholder</text>
-                        </svg>
+                        <img src="{{selectedItem.ProductThumbnail}}" class="image-fluid" />
                         
                         <h3 class="mt-3">You may also like...</h3>
                         <div class="row">
                             {{#selectedRelated.HydratedProductData}}
-                            <div class="col-sm-3">
-                                <div class="card mb-4">
-                                    <svg class="bd-placeholder-img card-img-top" width="100%" height="60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img" aria-label="Item: {{item_id}}">
-                                        <title>{{item_id}}</title>
-                                        <rect width="100%" height="100%" fill="{{bg_color}}"></rect>
-                                        <text x="20px" y="50%" fill="#ffffff" dy="0.3em">{{item_id}}</text>
-                                    </svg>
-                                    <div class="card-body">
-                                        <h5 class="card-title" style="min-height:80px;">{{product_title}}</h5>
-                                        <a href="#" class="btn btn-warning btn-viewproduct" 
-                                            data-item_id="{{item_id}}" 
-                                            data-product_title="{{product_title}}" 
-                                            data-product_reviews="{{product_reviews}}" 
-                                            data-product_rating_rounded="{{product_rating_rounded}}" 
-                                            data-bg_color="{{bg_color}}">VIEW</a>
-                                    </div>
-                                </div>
+                            <div class="col">
+                                <a href="#" class="link-viewproduct" 
+                                    title="{{ProductName}}"
+                                    data-id="{{ProductID}}"
+                                    data-name="{{ProductName}}"
+                                    data-thumbnail="{{ProductThumbnail}}">
+                                    <img src="{{ProductThumbnail}}" class="card-img-top" alt="IMDB Image: {{ProductName}}"  />
+                                </a>
                             </div>
                             {{/selectedRelated.HydratedProductData}}
                         </div>
@@ -154,7 +131,6 @@
         </div>
     </div>
 
-    <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
@@ -165,33 +141,74 @@
     <script>
         /* global Handlebars, $ */
         const $textareaDiagnostics = $("#textareaDiagnostics");
-        const urlApiBase = "https://kh4w16mxvf.execute-api.us-east-2.amazonaws.com/dev/recommendations";
+        const urlApiBase = "https://36dplz2ibl.execute-api.us-east-2.amazonaws.com/demoMovies/recommendations";
         const users = [{
                 name: "you",
-                lead: "Welcome to our site, whoever you are, enjoy our stuff.",
+                //lead: "Welcome to our site, whoever you are, enjoy our stuff.",
                 userId: ""
             },
             {
                 name: "Ada",
-                lead: "Welcome, Ada, we know you're Female, 13-19, with a salary of $120K - $160K.",
-                userId: "37100644"
+                //lead: "Welcome, Ada, we know you're Female, 13-19, with a salary of $120K - $160K.",
+                userId: "1"
             },
             {
                 name: "Ben",
-                lead: "Welcome, Ben, we know you're Male, 20-29, with a salary of $80K - $120K.",
-                userId: "38593207"
+                //lead: "Welcome, Ben, we know you're Male, 20-29, with a salary of $80K - $120K.",
+                userId: "2"
             },
             {
                 name: "Claire",
-                lead: "Welcome, Claire, we know you're Female, 50+, with a salary of $40K - $80K.",
-                userId: "42794646"
+                //lead: "Welcome, Claire, we know you're Female, 50+, with a salary of $40K - $80K.",
+                userId: "3"
             },
             {
                 name: "David",
-                lead: "Welcome, David, we know you're Make, 30-39, with a salary of $160K+.",
-                userId: "44129943"
+                //lead: "Welcome, David, we know you're Make, 30-39, with a salary of $160K+.",
+                userId: "4"
             }
         ];
+        const items = [{
+                "ProductID": "1",
+                "ProductName": "Toy Story",
+                "ProductThumbnail": "https://m.media-amazon.com/images/M/MV5BMDU2ZWJlMjktMTRhMy00ZTA5LWEzNDgtYmNmZTEwZTViZWJkXkEyXkFqcGdeQXVyNDQ2OTk4MzI@._V1_UX182_CR0,0,182,268_AL_.jpg"
+            },
+            {
+                "ProductID": "2",
+                "ProductName": "GoldenEye",
+                "ProductThumbnail": "https://m.media-amazon.com/images/M/MV5BMzk2OTg4MTk1NF5BMl5BanBnXkFtZTcwNjExNTgzNA@@._V1_UX182_CR0,0,182,268_AL_.jpg"
+            },
+            {
+                "ProductID": "3",
+                "ProductName": "Four Rooms",
+                "ProductThumbnail": "https://m.media-amazon.com/images/M/MV5BNDc3Y2YwMjUtYzlkMi00MTljLTg1ZGMtYzUwODljZTI1OTZjXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_UX182_CR0,0,182,268_AL_.jpg"
+            },
+            {
+                "ProductID": "4",
+                "ProductName": "Get Shorty",
+                "ProductThumbnail": "https://m.media-amazon.com/images/M/MV5BMjAwODYzNDY4Ml5BMl5BanBnXkFtZTcwODkwNTgzNA@@._V1_UX182_CR0,0,182,268_AL_.jpg"
+            },
+            {
+                "ProductID": "5",
+                "ProductName": "Copycat",
+                "ProductThumbnail": "https://m.media-amazon.com/images/M/MV5BYWUwNDk2ZDYtNmFkMi00NjE5LWE1M2ItYTRkNTFjZDU3ZDU4L2ltYWdlL2ltYWdlXkEyXkFqcGdeQXVyMTYxNjkxOQ@@._V1_UX182_CR0,0,182,268_AL_.jpg"
+            },
+            {
+                "ProductID": "6",
+                "ProductName": "Shanghai Triad",
+                "ProductThumbnail": "https://m.media-amazon.com/images/M/MV5BMTgyMzAwOTQyNF5BMl5BanBnXkFtZTcwNDU1MjgxMQ@@._V1_UY268_CR1,0,182,268_AL_.jpg"
+            },
+            {
+                "ProductID": "7",
+                "ProductName": "Twelve Monkeys",
+                "ProductThumbnail": "https://m.media-amazon.com/images/M/MV5BN2Y2OWU4MWMtNmIyMy00YzMyLWI0Y2ItMTcyZDc3MTdmZDU4XkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_UX182_CR0,0,182,268_AL_.jpg"
+            },
+            {
+                "ProductID": "8",
+                "ProductName": "Babe",
+                "ProductThumbnail": "https://m.media-amazon.com/images/M/MV5BYjg4ZjUzMzMtYzlmYi00YTcwLTlkOWUtYWFmY2RhNjliODQzXkEyXkFqcGdeQXVyNTUyMzE4Mzg@._V1_UX182_CR0,0,182,268_AL_.jpg"
+            }
+        ]
         let viewmodel = {};
         updateViewmodel(0);
         
@@ -228,7 +245,7 @@
                         user: user,
                         products: data
                     };
-                    //console.log(JSON.stringify(viewmodel));
+                    console.log(JSON.stringify(viewmodel, null, 2));
                     $textareaDiagnostics.val($textareaDiagnostics.val() + formatResponseForTextarea(data));
                     updateUI(viewmodel);
                 });
@@ -238,38 +255,10 @@
                     userIndex: userIndex,
                     user: user,
                     products: {
-                        HydratedProductData: [{
-                                "item_id": "B0062ONAM8",
-                                "product_title": "Amazon eGift Card - Amazon Electronics",
-                                "product_reviews": 169,
-                                "product_rating": 4.887573964,
-                                "product_rating_rounded": 4.89
-                            },
-                            {
-                                "item_id": "BT00DC6QU4",
-                                "product_title": "Amazon.com eGift Cards",
-                                "product_reviews": 168,
-                                "product_rating": 4.869047619,
-                                "product_rating_rounded": 4.87
-                            },
-                            {
-                                "item_id": "B004LLIL3C",
-                                "product_title": "Amazon eGift Card - Happy Birthday (Octopus)",
-                                "product_reviews": 168,
-                                "product_rating": 4.821428571,
-                                "product_rating_rounded": 4.82
-                            },
-                            {
-                                "item_id": "B004RD9ACA",
-                                "product_title": "Amazon Gift Card - Print - Happy Birthday (Hats)",
-                                "product_reviews": 166,
-                                "product_rating": 4.734939759,
-                                "product_rating_rounded": 4.73
-                            }
-                        ]
+                        HydratedProductData: items
                     }
                 };
-                console.log(JSON.stringify(viewmodel));
+                //console.log(JSON.stringify(viewmodel));
                 updateUI(viewmodel);
             }
         }
@@ -282,27 +271,26 @@
             doHandlebars("#contentModal", "templateModal", viewmodel);
         }
         
-        $(document).on('click', '.btn-viewproduct', function(e) {
+        $(document).on('click', '.link-viewproduct', function(e) {
             e.preventDefault();
             $('#productModal').modal('hide');
             viewmodel.selectedItem = {
-                item_id: $(this).data('item_id'),
-                product_title: $(this).data('product_title'),
-                product_reviews: $(this).data('product_reviews'),
-                product_rating_rounded: $(this).data('product_rating_rounded'),
-                bg_color: $(this).data('bg_color')
+                ProductID: $(this).data('id'),
+                ProductName: $(this).data('name'),
+                ProductThumbnail: $(this).data('thumbnail')
             };
             
             var urlApi;
-            if (viewmodel.userIndex === 0 && viewmodel.selectedItem.item_id)
-                urlApi = urlApiBase + "/item/" + viewmodel.selectedItem.item_id;
-            else if (viewmodel.userIndex > 0 && viewmodel.selectedItem.item_id)
-                urlApi = urlApiBase + "/useritem/" + viewmodel.user.userId + "/" + viewmodel.selectedItem.item_id;
+            if (viewmodel.userIndex === 0 && viewmodel.selectedItem.ProductID)
+                urlApi = urlApiBase + "/item/" + viewmodel.selectedItem.ProductID;
+            else if (viewmodel.userIndex > 0 && viewmodel.selectedItem.ProductID)
+                urlApi = urlApiBase + "/useritem/" + viewmodel.user.userId + "/" + viewmodel.selectedItem.ProductID;
             
             if(urlApi) {
                 $textareaDiagnostics.val($textareaDiagnostics.val() + "GET: " + urlApi + "\n");
                 $.get(urlApi).done(function(data) {
                     viewmodel.selectedRelated = data;
+                    console.log(JSON.stringify(viewmodel, null, 2));
                     $textareaDiagnostics.val($textareaDiagnostics.val() + formatResponseForTextarea(data));
                     doHandlebars("#contentModal", "templateModal", viewmodel);
                     $('#productModal').modal('show');
@@ -315,7 +303,7 @@
             var content = "";
             if(data && data.HydratedProductData && data.HydratedProductData.length > 0) {
                 for(var i = 0; i < data.HydratedProductData.length; i++) {
-                    content += `,${data.HydratedProductData[i].item_id}`;
+                    content += `,${data.HydratedProductData[i].ProductID}`;
                 }
                 content = "  => " + content.substr(1) + "\n"; //add prefix, remove leading comma, and add newline
             }
