@@ -9,6 +9,9 @@ This is a demo project to showcase fundamental Amazon Personalize capabilities v
 * Any Item viewed for a selected User will trigger a Personalize API call containing User+Item input.
 * A diagnostic HTML textarea provides info to the API Requests and Responses.
 
+### Rough Architectural Overview
+Website on S3 <--> API Gateway <--> Lambda <--> Personalize
+
 ### Folders:
 * apiPersonalize: a folder containing a serverless facade API to broker the Personalize requests as well as a mocked Item database that is used to hydrate Personalize responses into a meaningful format.
 * dataPersonalize: a folder containing the CSV data files used to populate Amazon Personalize
