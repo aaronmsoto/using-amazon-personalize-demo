@@ -44,8 +44,8 @@ Install Serverless Framework (serverless.com): `npm i -g serverless`
 
 ### Local Function Invocation for Testing (from apiPersonalize folder)
 
-`serverless invoke local -f GetRecommendationsByUser -p testeventByUser.json`\
 `serverless invoke local -f GetRecommendationsByItem -p testeventByItem.json`\
+`serverless invoke local -f GetRecommendationsByUser -p testeventByUser.json`\
 `serverless invoke local -f GetRecommendationsByUserItem -p testeventByUserItem.json`
 
 ### API Deployment (from apiPersonalize folder)

@@ -12,6 +12,9 @@ provider:
     # You must set the following two SSM Parameter Store values for your Personalize Campaign ARNs...
     SsmPersonalizeArnCampaignByUser: /personalizeMovies/arnPersonalizeCampaignByUser
     SsmPersonalizeArnCampaignByItem: /personalizeMovies/arnPersonalizeCampaignByItem
+    SsmAuroraClusterArn: /auroraMovies/arnCluster
+    SsmAuroraSecretsArn: /auroraMovies/arnSecrets
+    SsmAuroraDatabaseName: /auroraMovies/dbName
     SsmIsEncrypted: true
     FileProductData: data_movies.json
     FileFieldProductID: movie_id
@@ -32,24 +35,40 @@ provider:
         - "ssm:GetParameters"
       Resource:
         - "arn:aws:ssm:*"
+    - Effect: "Allow"
+      Action:
+        - "rds-data:*"
+      Resource:
+        - "*"
+    - Effect: "Allow"
+      Action:
+        - "secretsmanager:GetSecretValue"
+      Resource:
+        - "arn:aws:secretsmanager:*:*:secret:*"
 
 functions:
-  GetRecommendationsByUser:
-    handler: handler.GetRecommendationsByUser
-    events:
-      - http:
-          cors: true
-          path: recommendations/user/{userId}
-          method: get
   GetRecommendationsByItem:
     handler: handler.GetRecommendationsByItem
+    memorySize: 1024
+    timeout: 10
     events:
       - http:
           cors: true
           path: recommendations/item/{itemId}
           method: get
+  GetRecommendationsByUser:
+    handler: handler.GetRecommendationsByUser
+    memorySize: 1024
+    timeout: 10
+    events:
+      - http:
+          cors: true
+          path: recommendations/user/{userId}
+          method: get
   GetRecommendationsByUserItem:
     handler: handler.GetRecommendationsByUserItem
+    memorySize: 1024
+    timeout: 10
     events:
       - http:
           cors: true

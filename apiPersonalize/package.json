@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/aaronmsoto/using-amazon-personalize-demo#readme",
   "dependencies": {
-    "aws-sdk": "^2.619.0"
+    "aws-sdk": "^2.619.0",
+    "data-api-client": "^1.0.1"
   }
 }
