@@ -7,7 +7,10 @@ This is a demo project to showcase fundamental Amazon Personalize capabilities v
 * The UI also has 4 mocked Users available in the main nav to simulate SPA usage as different Users.
 * Each User will cause a Personalize API call to retrieve personalized Item recommendations.
 * Any Item viewed for a selected User will trigger a Personalize API call containing User+Item input.
-* Diagnostic HTML textareas provide info to the API Requests and Responses.
+* A diagnostic HTML textarea provides info to the API Requests and Responses.
+
+### Rough Architectural Overview
+Website on S3 <--> API Gateway <--> Lambda <--> Personalize
 
 ### Folders:
 * apiPersonalize: a folder containing a serverless facade API to broker the Personalize requests as well as a mocked Item database that is used to hydrate Personalize responses into a meaningful format.
@@ -54,5 +57,5 @@ Install Serverless Framework (serverless.com): `npm i -g serverless`
 
 ### WebUI SPA Deployment (from webDemo folder)
 
-`aws s3 sync . s3://publicweb-using-amazon-personalize-demo/ --acl public-read`\
-(replace **publicweb-using-amazon-personalize-demo** with whatever target bucket you're using)
+`aws s3 sync . s3://YOUR-BUCKET-NAME/ --acl public-read`\
+(replace **YOUR-BUCKET-NAME** with whatever target bucket you're using)
