@@ -35,20 +35,11 @@
       </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
-                    <li id="user0" class="nav-item active">
-                        <a class="nav-link" href="#u=0">Welcome</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home/Reset</a>
                     </li>
-                    <li id="user1" class="nav-item">
-                        <a class="nav-link" href="#u=1">Ada</a>
-                    </li>
-                    <li id="user2" class="nav-item">
-                        <a class="nav-link" href="#u=2">Ben</a>
-                    </li>
-                    <li id="user3" class="nav-item">
-                        <a class="nav-link" href="#u=3">Claire</a>
-                    </li>
-                    <li id="user4" class="nav-item">
-                        <a class="nav-link" href="#u=4">David</a>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#signin" data-toggle="modal" data-target="#signinModal">Sign In</a>
                     </li>
                 </ul>
             </div>
@@ -64,13 +55,13 @@
     <!-- Script/Template Cards -->
     <script id="templateCards" type="x-template">
         <div class="container">
-            <div class="jumbotron  jumbotron-fixed">
-                <h1 class="display-6">Hello, <em>{{user.name}}</em>!</h1>
-                <p class="lead hidden">{{user.lead}}</p>
+            <div class="jumbotron  jumbotron-fixed pt-3 pb-1">
+                <h1 class="display-6">Hello, <em>{{user.username}}</em>!</h1>
+                <p class="lead hidden">{{user.info}}</p>
             </div>
         </div>
         <div class="container">
-            <h2>Recommendations for {{user.name}}:</h2>
+            <h2>Recommendations for {{user.username}}:</h2>
             <div class="row">
                 {{#products.HydratedProductData}}
                 <div class="col">
@@ -79,10 +70,26 @@
                         data-id="{{ProductID}}"
                         data-name="{{ProductName}}"
                         data-thumbnail="{{ProductThumbnail}}">
-                        <img src="{{ProductThumbnail}}" class="card-img-top" alt="IMDB Image: {{ProductName}}"  />
+                        <img src="{{ProductThumbnail}}" class="card-img-top" alt="IMDB Image: {{ProductName}}" />
                     </a>
                 </div>
                 {{/products.HydratedProductData}}
+            </div>
+        </div>
+        <div class="container mt-3">
+            <h2>In the past, you have liked...</h2>
+            <div class="row">
+                {{#products.InteractionsHistory}}
+                <div class="col">
+                    <a href="#" class="link-viewproduct" 
+                        title="{{ProductName}}"
+                        data-id="{{ProductID}}"
+                        data-name="{{ProductName}}"
+                        data-thumbnail="{{ProductThumbnail}}">
+                        <img src="{{ProductThumbnail}}" class="card-img-top" alt="IMDB Image: {{ProductName}}" />
+                    </a>
+                </div>
+                {{/products.InteractionsHistory}}
             </div>
         </div>
     </script>
@@ -130,6 +137,29 @@
             </div>
         </div>
     </div>
+    
+    <div class="modal fade" id="signinModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="exampleModalLabel">Sign In</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="modal-body">
+                    <h3 class="mt-3">Choose a User...</h3>
+                    <div class="form-group">
+                        <label for="txtUserId">User ID:</label>
+                        <input type="text" class="form-control" id="txtUserId" aria-describedby="idHelp" placeholder="Enter an ID...">
+                        <small id="idHelp" class="form-text text-muted">Enter a User ID integer value between <span id="spanMinUserId"></span> and <span id="spanMaxUserId"></span></small>
+                    </div>
+                    <button id="btnSignin" type="submit" class="btn btn-primary">Sign In</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -140,34 +170,39 @@
     <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
     <script>
         /* global Handlebars, $ */
+        const minUserId = 1;
+        const maxUserId = 943;
+        $('#spanMinUserId').text(minUserId);
+        $('#spanMaxUserId').text(maxUserId);
         const $textareaDiagnostics = $("#textareaDiagnostics");
         const urlApiBase = "https://36dplz2ibl.execute-api.us-east-2.amazonaws.com/demoMovies/recommendations";
-        const users = [{
-                name: "you",
-                //lead: "Welcome to our site, whoever you are, enjoy our stuff.",
-                userId: ""
-            },
-            {
-                name: "Ada",
-                //lead: "Welcome, Ada, we know you're Female, 13-19, with a salary of $120K - $160K.",
-                userId: "1"
-            },
-            {
-                name: "Ben",
-                //lead: "Welcome, Ben, we know you're Male, 20-29, with a salary of $80K - $120K.",
-                userId: "2"
-            },
-            {
-                name: "Claire",
-                //lead: "Welcome, Claire, we know you're Female, 50+, with a salary of $40K - $80K.",
-                userId: "3"
-            },
-            {
-                name: "David",
-                //lead: "Welcome, David, we know you're Make, 30-39, with a salary of $160K+.",
-                userId: "4"
-            }
-        ];
+        var currUser = {id:0, username:"Anonymous", info:"Demographics: Unknown"};
+        // const users = [{
+        //         name: "you",
+        //         //lead: "Welcome to our site, whoever you are, enjoy our stuff.",
+        //         userId: ""
+        //     },
+        //     {
+        //         name: "Ada",
+        //         //lead: "Welcome, Ada, we know you're Female, 13-19, with a salary of $120K - $160K.",
+        //         userId: "1"
+        //     },
+        //     {
+        //         name: "Ben",
+        //         //lead: "Welcome, Ben, we know you're Male, 20-29, with a salary of $80K - $120K.",
+        //         userId: "2"
+        //     },
+        //     {
+        //         name: "Claire",
+        //         //lead: "Welcome, Claire, we know you're Female, 50+, with a salary of $40K - $80K.",
+        //         userId: "3"
+        //     },
+        //     {
+        //         name: "David",
+        //         //lead: "Welcome, David, we know you're Make, 30-39, with a salary of $160K+.",
+        //         userId: "4"
+        //     }
+        // ];
         const items = [{
                 "ProductID": "1",
                 "ProductName": "Toy Story",
@@ -210,7 +245,7 @@
             }
         ]
         let viewmodel = {};
-        updateViewmodel(0);
+        updateViewmodel(0, null);
         
         window.onhashchange = function() {
             //Hash object extraction from: https://stackoverflow.com/questions/5646851/split-and-parse-window-location-hash
@@ -228,21 +263,27 @@
             $(selectorParentElement).html(template(jsonData));
         }
 
-        function updateViewmodel(userIndex, itemId) {
+        function updateViewmodel(userId, itemId) {
             var urlApi;
-            const user = users[userIndex];
-            if (userIndex === 0 && itemId)
+            // const user = users[userIndex];
+            if (userId === 0 && itemId)
                 urlApi = urlApiBase + "/item/" + itemId;
-            else if (userIndex > 0 && itemId)
-                urlApi = urlApiBase + "/useritem/" + user.userId + "/" + itemId;
-            else if (userIndex > 0)
-                urlApi = urlApiBase + "/user/" + user.userId;
+            else if (userId > 0 && itemId)
+                urlApi = urlApiBase + "/useritem/" + userId + "/" + itemId;
+            else if (userId > 0)
+                urlApi = urlApiBase + "/user/" + userId;
             if (urlApi) {
                 $textareaDiagnostics.val($textareaDiagnostics.val() + "GET: " + urlApi + "\n");
                 $.get(urlApi).done(function(data) {
+                    if(data && data.UserInfo) {
+                        currUser = data.UserInfo;
+                        if(data.UserInfo.age > 0 && data.UserInfo.gender && data.UserInfo.occupation) {
+                            currUser.info = `Demographics: ${data.UserInfo.age}, ${data.UserInfo.gender}, ${data.UserInfo.occupation}`;
+                        }
+                    }
                     viewmodel = {
-                        userIndex: userIndex,
-                        user: user,
+                        userIndex: currUser.id,
+                        user: currUser,
                         products: data
                     };
                     console.log(JSON.stringify(viewmodel, null, 2));
@@ -252,8 +293,8 @@
             }
             else {
                 viewmodel = {
-                    userIndex: userIndex,
-                    user: user,
+                    userIndex: userId,
+                    user: currUser,
                     products: {
                         HydratedProductData: items
                     }
@@ -264,12 +305,23 @@
         }
 
         function updateUI(viewmodel) {
-            $("[id^=user]").removeClass("active"); //remove "active" from all user* links
-            $("#user" + viewmodel.userIndex).addClass("active"); //add "active" to selected link
+            // $("[id^=user]").removeClass("active"); //remove "active" from all user* links
+            // $("#user" + viewmodel.userIndex).addClass("active"); //add "active" to selected link
             $textareaDiagnostics.scrollTop(99999999);
             doHandlebars("#contentPage", "templateCards", viewmodel);
             doHandlebars("#contentModal", "templateModal", viewmodel);
         }
+        
+        $(document).on('click', '#btnSignin', function(e) {
+            e.preventDefault();
+            var userId = document.getElementById('txtUserId').value;
+            if(userId >= minUserId && userId <= maxUserId) {
+                $('#signinModal').modal('hide');
+                window.location.hash = `#u=${userId}`;
+            } else {
+                alert(`Invalid User ID: ${userId} (must be an integer between 1 and 943)`);
+            }
+        });
         
         $(document).on('click', '.link-viewproduct', function(e) {
             e.preventDefault();
@@ -284,7 +336,7 @@
             if (viewmodel.userIndex === 0 && viewmodel.selectedItem.ProductID)
                 urlApi = urlApiBase + "/item/" + viewmodel.selectedItem.ProductID;
             else if (viewmodel.userIndex > 0 && viewmodel.selectedItem.ProductID)
-                urlApi = urlApiBase + "/useritem/" + viewmodel.user.userId + "/" + viewmodel.selectedItem.ProductID;
+                urlApi = urlApiBase + "/useritem/" + viewmodel.userIndex + "/" + viewmodel.selectedItem.ProductID;
             
             if(urlApi) {
                 $textareaDiagnostics.val($textareaDiagnostics.val() + "GET: " + urlApi + "\n");
@@ -305,7 +357,7 @@
                 for(var i = 0; i < data.HydratedProductData.length; i++) {
                     content += `,${data.HydratedProductData[i].ProductID}`;
                 }
-                content = "  => " + content.substr(1) + "\n"; //add prefix, remove leading comma, and add newline
+                content = "Recommended Item IDs => " + content.substr(1) + "\n"; //add prefix, remove leading comma, and add newline
             }
             return content;
         }
